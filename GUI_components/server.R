@@ -10,7 +10,7 @@ server = shinyServer(function(input, output, session){
     # ----- Update sliders and inputs 
     updateSliderInput(session, "x_range", max = nrow(coverage_data))
     updateSliderInput(session, "coverage_threshold", max = max(coverage_data[,3]))
-    
+    updateSelectInput(session, "reference_seq", choices=coverage_data[,1][!duplicated(coverage_data[,1])])
     # ----- Basic plot
 
     output$main_plot = renderPlot({
@@ -30,4 +30,16 @@ server = shinyServer(function(input, output, session){
       basic_plot(coverage_data, input$x_range[1], input$x_range[2])
       })
     })
+  
+  #-----select Contigs-----
+  observeEvent(input$reference_seq, {
+    req(input$coverage_data$datapath)
+    df2 = coverage_data[coverage_data$V1==input$reference_seq,]
+    output$main_plot = renderPlot({
+      basic_plot(df2, input$x_range[1], input$x_range[2])
+    })
+    ##basic_plot(df2,input$x_range[1], input$x_range[2])
+  
+    
+  })
 })
