@@ -26,6 +26,8 @@ server = shinyServer(function(input, output, session){
     #updateSliderInput(session, "coverage_threshold", max = max(coverage_data[,3]), value = 10)
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
     
+
+    updateSelectInput(session, "reference_seq", choices=coverage_data[,1][!duplicated(coverage_data[,1])])
     # ----- Basic plot
 
     output$main_plot = renderPlot({
@@ -69,3 +71,29 @@ server = shinyServer(function(input, output, session){
   
   
 })
+
+  #----------------------------- select Contigs -------------------------------#
+  observeEvent(input$reference_seq, {
+    req(input$coverage_data$datapath)
+    df2 = coverage_data[coverage_data$V1==input$reference_seq,]
+    output$main_plot = renderPlot({
+      basic_plot(df2, input$x_range[1], input$x_range[2])
+    })
+  })
+  
+  
+  #------------------------------ GFF Upload ------------------------------------#
+  observeEvent(input$uploadGFF, {
+    req(input$coverage_data$datapath)
+    req(input$GFF$datapath)
+    
+    
+    parse_gff(input$GFF$datapath)
+    
+    
+  })
+  
+  
+})
+
+
