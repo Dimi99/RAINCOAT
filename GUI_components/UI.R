@@ -27,11 +27,19 @@ ui = fluidPage(
            selectInput("reference_seq", "Contig/Chromosome", 
                        choices = c("Chr1", "Chr2", "..."),
                        width = '100%'),
+           fileInput("GFF", label = h2("GFF Upload"), accept = ".gff", 
+                     width = '100%'),
+           div(style = "margin-top: -20px"),  # reduces space
+           
+           actionButton("uploadGFF", "Upload!", width = '100%'),
            sliderInput("coverage_threshold", h4("Coverage Threshold"), 
                        min = 0, max = 30000, value = 1000, 
                        width = '100%'),
            selectInput("low_coverage_region", h4("Jump to low coverage region"), 
                        choices = c("-"), width = '100%'),
+           selectInput("low_coverage_gene", h4("Jump to low coverage gene"), 
+                       choices = c("needs gff file first"), width = '100%'),
+           
            ),
     column(8,
            plotOutput("main_plot", width = '95%', height = '800px')

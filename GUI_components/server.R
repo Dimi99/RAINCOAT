@@ -31,15 +31,28 @@ server = shinyServer(function(input, output, session){
       })
     })
   
-  #-----select Contigs-----
+  #----------------------------- select Contigs -------------------------------#
   observeEvent(input$reference_seq, {
     req(input$coverage_data$datapath)
     df2 = coverage_data[coverage_data$V1==input$reference_seq,]
     output$main_plot = renderPlot({
       basic_plot(df2, input$x_range[1], input$x_range[2])
     })
-    ##basic_plot(df2,input$x_range[1], input$x_range[2])
+  })
   
+  
+  #------------------------------ GFF Upload ------------------------------------#
+  observeEvent(input$uploadGFF, {
+    req(input$coverage_data$datapath)
+    req(input$GFF$datapath)
+    
+    
+    parse_gff(input$GFF$datapath)
+    
     
   })
+  
+  
 })
+
+

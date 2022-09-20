@@ -2,6 +2,8 @@
 library(shiny)
 library(shinythemes)
 library(shinyWidgets)
+library(rtracklayer)
+
 
 source("./GUI_components/UI.R")
 source("./GUI_components/server.R")

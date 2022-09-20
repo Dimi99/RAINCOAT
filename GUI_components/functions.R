@@ -22,8 +22,27 @@ find_low_coverage_regions = function(coverage_data, threshold){
 
 
 
+
 # thr = 10
 # t1 = which(coverage_data$V3 < thr)
 # View(rle(diff(t1)))
 # 
 # diff(t1)[9:(9+59)]
+
+
+
+
+
+
+
+
+# # ------------------- GFF-Parsing - related ----------------------- #
+
+parse_gff = function(filepath){
+  print("------------------------------------")
+  my_columns <- c( "start", "end", "strand")
+  df3 <- readGFF(filepath, columns=my_columns)
+  zu = data.frame(df3$start, df3$end, df3$ID, df3$strand)
+  colnames(zu) = c("start","end","id","strand")
+  print(head(zu))
+}
