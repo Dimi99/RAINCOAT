@@ -27,6 +27,7 @@ server = shinyServer(function(input, output, session){
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
     
     # ----- Basic plot
+
     output$main_plot = renderPlot({
       basic_plot(coverage_data, input$x_range[1], input$x_range[2], alpha_value)
       })
