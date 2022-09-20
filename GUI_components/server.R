@@ -12,6 +12,7 @@ server = shinyServer(function(input, output, session){
     updateSliderInput(session, "coverage_threshold", max = max(coverage_data[,3]))
     
     # ----- Basic plot
+
     output$main_plot = renderPlot({
       basic_plot(coverage_data, input$x_range[1], input$x_range[2])
       })
