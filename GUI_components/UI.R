@@ -28,10 +28,14 @@ ui = fluidPage(
                        choices = c("Chr1", "Chr2", "..."),
                        width = '100%'),
            sliderInput("coverage_threshold", h4("Coverage Threshold"), 
-                       min = 0, max = 30000, value = 1000, 
+                       min = 0, max = 1000, value = 10, 
                        width = '100%'),
            selectInput("low_coverage_region", h4("Jump to low coverage region"), 
                        choices = c("-"), width = '100%'),
+           h2("Plot aesthetics"),
+           sliderInput("plot_alpha", h4("Alpha"), 
+                       min = 0, max = 1, value = 0.3, 
+                       width = '100%')
            ),
     column(8,
            plotOutput("main_plot", width = '95%', height = '800px')
