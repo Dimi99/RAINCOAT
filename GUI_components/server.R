@@ -6,6 +6,7 @@ server = shinyServer(function(input, output, session){
     # CATCH COVERAGE DATA NOT YET LOADED
     coverage_data <<- read.csv(input$coverage_data$datapath, sep='\t', header=FALSE)
     updateSliderInput(session, "x_range", max = nrow(coverage_data))
+
     output$main_plot = renderPlot({
       plot(coverage_data$V3[input$x_range[1]:input$x_range[2]], pch = 20, cex=0.1,
            main="Intergenic Mapping: Coverage",
