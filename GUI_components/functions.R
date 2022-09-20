@@ -1,10 +1,10 @@
 # --------------------- Basic plot in specified window ----------------------- #
-basic_plot = function(data, start_coord, end_coord){
+basic_plot = function(data, start_coord, end_coord, alpha){
   plot(data[start_coord:end_coord,]$V3, pch = 20, cex=0.1,
        main="Intergenic Mapping: Coverage",
        ylab = "Mapped Bases",
        xlab="Intergenic Position",
-       col=rgb(red = 0, green = 0, blue = 0, alpha=0.3),
+       col=rgb(red = 0, green = 0, blue = 0, alpha=alpha),
        cex.lab=2.5, cex.axis=1, cex.main=2.5, cex.sub=2.5)
 }
 
@@ -16,25 +16,16 @@ find_low_coverage_regions = function(coverage_data, threshold){
   consisting of the start- and end-coordinate of a consistent region below
   the threshold.
   "
+  # find consecutive low coverage coordinates and length of these regions
+  low_cov = which(coverage_data$V3 < threshold)
+  start = c(1, low_cov[c(0, diff(low_cov)) > 1])
+  end = c(low_cov[diff(low_cov) > 1], length(low_cov))
+  start_end_regions = data.frame(start, end)
+  start_end_regions$choices = paste(start_enhttps://en.wikipedia.org/wiki/Coverage_(genetics)d_regions[,1], " : ", start_end_regions[,2])
   
+  return(start_end_regions)
   
 }
-
-
-
-
-# thr = 10
-# t1 = which(coverage_data$V3 < thr)
-# View(rle(diff(t1)))
-# 
-# diff(t1)[9:(9+59)]
-
-
-
-
-
-
-
 
 # # ------------------- GFF-Parsing - related ----------------------- #
 
