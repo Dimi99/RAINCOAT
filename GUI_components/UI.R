@@ -11,7 +11,7 @@ ui = fluidPage(
       div(style = "margin-top: -20px"),  # reduces space
       actionButton("upload", "Upload!", width = '100%')
     ),
-    column(8, offset = 1,
+    column(8,
     # -------------------------- Sidebar: Controls --------------------------- #
       h4("Controls"),
       sliderInput("x_range", "X-Axis range", min = 0, max = 30000, 
