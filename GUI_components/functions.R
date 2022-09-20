@@ -21,7 +21,7 @@ find_low_coverage_regions = function(coverage_data, threshold){
   start = c(1, low_cov[c(0, diff(low_cov)) > 1])
   end = c(low_cov[diff(low_cov) > 1], length(low_cov))
   start_end_regions = data.frame(start, end)
-  start_end_regions$choices = paste(start_enhttps://en.wikipedia.org/wiki/Coverage_(genetics)d_regions[,1], " : ", start_end_regions[,2])
+  start_end_regions$choices = paste(start_end_regions[,1], " : ", start_end_regions[,2])
   
   return(start_end_regions)
   

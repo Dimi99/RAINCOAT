@@ -41,7 +41,7 @@ ui = fluidPage(
            h2("Plot aesthetics"),
            sliderInput("plot_alpha", h4("Alpha"), 
                        min = 0, max = 1, value = 0.3, 
-                       width = '100%')
+                       width = '100%'),
            selectInput("low_coverage_gene", h4("Jump to low coverage gene"), 
                        choices = c("needs gff file first"), width = '100%'),
            

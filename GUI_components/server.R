@@ -25,11 +25,9 @@ server = shinyServer(function(input, output, session){
     updateSliderInput(session, "x_range", max = nrow(coverage_data))
     #updateSliderInput(session, "coverage_threshold", max = max(coverage_data[,3]), value = 10)
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
-    
-
     updateSelectInput(session, "reference_seq", choices=coverage_data[,1][!duplicated(coverage_data[,1])])
+    
     # ----- Basic plot
-
     output$main_plot = renderPlot({
       basic_plot(coverage_data, input$x_range[1], input$x_range[2], alpha_value)
       })
@@ -55,7 +53,7 @@ server = shinyServer(function(input, output, session){
   observeEvent(input$coverage_threshold, {
     req(input$coverage_data$datapath)
     # update select input based on threshold
-    low_coverage_info <<- find_low_coverage_regions(coverage_data, input$coverage_threshold)
+    low_coverage_info <<- find_low_coverage_regions(coverage_data_contig, input$coverage_threshold)
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
   })
   
@@ -66,18 +64,22 @@ server = shinyServer(function(input, output, session){
       start_end = as.integer(unlist(strsplit(input$low_coverage_region, " : ")))
       updateSliderInput(session, "x_range", value = c(start_end[1], start_end[2]))
     }
-
   })
   
-  
-})
-
   #----------------------------- select Contigs -------------------------------#
   observeEvent(input$reference_seq, {
     req(input$coverage_data$datapath)
-    df2 = coverage_data[coverage_data$V1==input$reference_seq,]
+    # subset data and change to different contig/chromosome
+    coverage_data_contig <<- coverage_data[coverage_data$V1==input$reference_seq,]
+    updateSliderInput(session, "x_range", max = nrow(coverage_data_contig))
+    
+    # update select input for low coverage regions on threshold
+    low_coverage_info <<- find_low_coverage_regions(coverage_data_contig, input$coverage_threshold)
+    updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
+    
+    # plot
     output$main_plot = renderPlot({
-      basic_plot(df2, input$x_range[1], input$x_range[2])
+      basic_plot(coverage_data_contig, input$x_range[1], input$x_range[2])
     })
   })
   
@@ -89,10 +91,7 @@ server = shinyServer(function(input, output, session){
     
     
     parse_gff(input$GFF$datapath)
-    
-    
   })
-  
   
 })
 
