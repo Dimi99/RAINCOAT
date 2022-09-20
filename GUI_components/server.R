@@ -3,6 +3,7 @@ server = shinyServer(function(input, output, session){
   # ----------------------------- Data Upload -------------------------------- #
   observeEvent(input$upload, {
     coverage_data = read.csv(input$coverage_data$datapath, sep='\t', header=FALSE)
+    req(coverage_data)
     output$main_plot = renderPlot({
       plot(coverage_data$V3[1:50000], pch = 20, cex=0.1,
            main="Intergenic Mapping: Coverage",
