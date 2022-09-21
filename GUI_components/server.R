@@ -10,7 +10,7 @@ server = shinyServer(function(input, output, session){
     # update plot
     req(input$coverage_data$datapath)
     output$main_plot = renderPlot({
-      basic_plot(coverage_data, input$x_range[1], input$x_range[2], alpha_value)
+      basic_plot(coverage_data_contig, input$x_range[1], input$x_range[2], alpha_value)
     })
   })
   
