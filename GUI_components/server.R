@@ -1,22 +1,50 @@
 # Koutsogiannis & Währer
 server = shinyServer(function(input, output, session){
   max_range=500000
+
   # ---------------------------- Plot aesthetics ----------------------------- #
-  # ---- alpha value for dot plot
-  observeEvent(input$plot_alpha, {
+  # ---- dot plots
+  observeEvent(input$dots_alpha, {
     # get value
-    alpha_value <<- input$plot_alpha
-    
-    # update plot
+    dot_alpha <<- input$dots_alpha
+    # update plots
     req(input$coverage_data$datapath)
-    output$main_plot = renderPlot({
-      basic_plot(coverage_data_contig, input$x_range[1], input$x_range[2], alpha_value)
+    observeEvent(input$plot_dots, {
+      output$main_plot = renderPlot({
+        basic_plot(coverage_data_contig, input$x_range[1], input$x_range[2], input$plot_dots, input$plot_line, dot_alpha, line_alpha)
+      })
+    })
+    # selected items
+    req(input$plot_brush)
+    output$selection_plot = renderPlot({
+      basic_plot(selected_items(), 1, nrow(selected_items()), input$plot_dots, input$plot_line, dot_alpha, line_alpha)
     })
   })
   
+  # ---- line plots
+  observeEvent(input$line_alpha, {
+    # get value
+    line_alpha <<- input$line_alpha
+    # update plots
+    req(input$coverage_data$datapath)
+    observeEvent(input$plot_line, {
+      # main plot
+      output$main_plot = renderPlot({
+        basic_plot(coverage_data_contig, input$x_range[1], input$x_range[2], input$plot_dots, input$plot_line, dot_alpha, line_alpha)
+      })
+      # selected items
+      req(input$plot_brush)
+      output$selection_plot = renderPlot({
+        basic_plot(selected_items(), 1, nrow(selected_items()), input$plot_dots, input$plot_line, dot_alpha, line_alpha)
+      })
+      
+    })
+  })
+  
+  
   # ----------------------------- Data Upload -------------------------------- #
   observeEvent(input$upload, {
-
+    
     req(input$coverage_data$datapath)
     coverage_data <<- read.csv(input$coverage_data$datapath, sep='\t', header=FALSE)
     low_coverage_info <<- find_low_coverage_regions(coverage_data, input$coverage_threshold)
@@ -29,13 +57,17 @@ server = shinyServer(function(input, output, session){
     
     # ----- Basic plot
     output$main_plot = renderPlot({
-      basic_plot(coverage_data, input$x_range[1], input$x_range[2], alpha_value)
+      basic_plot(coverage_data_contig, input$x_range[1], input$x_range[2], input$plot_dots, input$plot_line, dot_alpha, line_alpha)
       })
+
+    # ----- Render (empty) data table for selected plots
+    output$main_plot_info = renderDataTable({
+      brushedPoints(coverage_data_contig, input$plot_brush)
+    })
   })
   
-  
   # ----------------------------- x-Axis control ----------------------------- #
-  observeEvent(input$x_range[2],{
+  observeEvent(input$x_range,{
     # ----- Fixed x-Axis range
     if(input$x_range[1] + max_range < input$x_range[2]){
       updateSliderInput(session, "x_range", value = c(input$x_range[1], input$x_range[1] + max_range))
@@ -43,7 +75,7 @@ server = shinyServer(function(input, output, session){
     # ----- Plot based on sliders
     req(input$coverage_data$datapath)
     output$main_plot = renderPlot({
-      basic_plot(coverage_data, input$x_range[1], input$x_range[2], alpha_value)
+      basic_plot(coverage_data_contig, input$x_range[1], input$x_range[2], input$plot_dots, input$plot_line, dot_alpha, line_alpha)
       })
     })
   
@@ -66,6 +98,7 @@ server = shinyServer(function(input, output, session){
     }
   })
   
+  
   #----------------------------- select Contigs -------------------------------#
   observeEvent(input$reference_seq, {
     req(input$coverage_data$datapath)
@@ -79,7 +112,7 @@ server = shinyServer(function(input, output, session){
     
     # plot
     output$main_plot = renderPlot({
-      basic_plot(coverage_data_contig, input$x_range[1], input$x_range[2])
+      basic_plot(coverage_data_contig, input$x_range[1], input$x_range[2], input$plot_dots, input$plot_line, dot_alpha, line_alpha)
     })
   })
   
@@ -89,8 +122,25 @@ server = shinyServer(function(input, output, session){
     req(input$coverage_data$datapath)
     req(input$GFF$datapath)
     
-    
+  
     parse_gff(input$GFF$datapath)
+  })
+  
+  
+  # ---------------------- Subplot for selected regions ---------------------- #
+  observeEvent(input$plot_brush, {
+    # ----- Info about selected plot items
+    selected_items <<- reactive(
+      brushedPoints(coverage_data_contig, input$plot_brush)
+    )
+    output$main_plot_info = renderDataTable(
+      selected_items(),
+      options = list(pageLength=10)
+    )
+    # ----- Plot selected items
+    output$selection_plot = renderPlot({
+      basic_plot(selected_items(), 1, nrow(selected_items()), input$plot_dots, input$plot_line, dot_alpha, line_alpha)
+    })
   })
   
 })
