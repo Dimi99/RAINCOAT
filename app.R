@@ -1,5 +1,6 @@
 # Koutsogiannis & Währer
 library(ggplot2)
+library(DT)
 library(shiny)
 library(shinythemes)
 library(shinyWidgets)
