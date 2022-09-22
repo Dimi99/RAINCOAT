@@ -70,6 +70,13 @@ ui = fluidPage(
            # Selectinputs: Low coverage regions/genes
            selectInput("low_coverage_region", h4("Jump to low coverage region"), 
                        choices = c("-"), width = '100%'),
+           radioButtons("low_coverage_gene_mode", label = "Low Coverage Gene Mode", choices = c("Absolute", "Window"), inline = TRUE),
+           conditionalPanel(
+             condition = "input.low_coverage_gene_mode == 'Window'",
+             sliderInput("cov_window", h4("Coverage Window"), 
+                         min = 1, max = 40, value = 10, 
+                         width = '100%'),
+           ),
            selectInput("low_coverage_gene", h4("Jump to low coverage gene"), 
                        choices = c("needs gff file first"), width = '100%'),
            ),
