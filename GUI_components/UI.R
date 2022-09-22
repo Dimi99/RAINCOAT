@@ -39,7 +39,7 @@ ui = fluidPage(
       actionButton("upload", "Upload!", width = '100%'),
       
       # ---- GFF file
-      fileInput("GFF", label = h4("GFF Upload (Optional)"), accept = ".gff", 
+      fileInput("GFF", label = h4("GFF Upload (Optional)"), accept = c(".gff",".gff.gz"), 
                 width = '100%'),
       div(style = "margin-top: -20px"),  # reduces space
       actionButton("uploadGFF", "Upload!", width = '100%'),

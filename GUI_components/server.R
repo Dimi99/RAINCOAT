@@ -48,7 +48,6 @@ server = shinyServer(function(input, output, session){
     req(input$coverage_data$datapath)
     coverage_data <<- read.csv(input$coverage_data$datapath, sep='\t', header=FALSE)
     low_coverage_info <<- find_low_coverage_regions(coverage_data, input$coverage_threshold)
-    
     # ----- Update sliders and inputs 
     updateSliderInput(session, "x_range", max = nrow(coverage_data))
     #updateSliderInput(session, "coverage_threshold", max = max(coverage_data[,3]), value = 10)
@@ -125,7 +124,7 @@ server = shinyServer(function(input, output, session){
     req(input$coverage_data$datapath)
     req(input$GFF$datapath)
     genes_df <<- parse_gff(input$GFF$datapath)
-    if(max(genes_df$end) == nrow(coverage_data)){
+    if(max(genes_df$end) <= nrow(coverage_data)){
       coverage_data_contig <<- depth_with_gene(coverage_data_contig, genes_df)
       low_cov = find_low_coverage_regions(coverage_data,input$coverage_threshold)
       low_cov_genes <<- low_coverage_gene(low_cov,genes_df)
