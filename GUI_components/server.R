@@ -87,6 +87,9 @@ server = shinyServer(function(input, output, session){
     # update select input based on threshold
     low_coverage_info <<- find_low_coverage_regions(coverage_data_contig, input$coverage_threshold)
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
+    req(input$GFF$datapath)
+    low_cov_genes <<- low_coverage_gene(low_coverage_info,genes_df)
+    updateSelectInput(session, "low_coverage_gene", choices = c("OFF",low_cov_genes$name))
   })
   
   # ---- jump to low coverage regions
@@ -117,13 +120,33 @@ server = shinyServer(function(input, output, session){
   })
   
   
-  #------------------------------ GFF Upload ------------------------------------#
+  #------------------------------ Low Coverage Gene ------------------------------------#
   observeEvent(input$uploadGFF, {
     req(input$coverage_data$datapath)
     req(input$GFF$datapath)
+    genes_df <<- parse_gff(input$GFF$datapath)
+    if(max(genes_df$end) == nrow(coverage_data)){
+      coverage_data_contig <<- depth_with_gene(coverage_data_contig, genes_df)
+      low_cov = find_low_coverage_regions(coverage_data,input$coverage_threshold)
+      low_cov_genes <<- low_coverage_gene(low_cov,genes_df)
+      updateSelectInput(session, "low_coverage_gene", choices = c("OFF",low_cov_genes$name))
+      
+    }else{
+      updateSelectInput(session, "low_coverage_gene", choices = "GFF not compatible with counts")
+    }
     
+   
+  })
   
-    parse_gff(input$GFF$datapath)
+  
+  observeEvent(input$low_coverage_gene, {
+    req(input$coverage_data$datapath)
+    req(input$GFF$datapath)
+    if(input$low_coverage_gene != "OFF"){
+      test_obj = low_cov_genes[which(low_cov_genes$name == input$low_coverage_gene), ]
+      updateSliderInput(session, "x_range", value = c(test_obj[1,1], test_obj[1,2]))
+    }
+
   })
   
   
