@@ -51,10 +51,12 @@ find_low_coverage_regions = function(coverage_data, threshold){
 # # ------------------- GFF-Parsing - related ----------------------- #
 
 parse_gff = function(filepath){
-  print("------------------------------------")
   my_columns <- c( "start", "end", "strand")
   df3 <- readGFF(filepath, columns=my_columns)
-  zu = data.frame(df3$start, df3$end, df3$ID, df3$strand)
+  zu = data.frame(df3$start, df3$end, df3$Name, df3$strand)
   colnames(zu) = c("start","end","id","strand")
-  print(head(zu))
+  zu$id<- zu$id %>% replace_na("XXX")
+  out = remove_duplicates(zu)
+  return(out)
 }
+
