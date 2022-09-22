@@ -123,6 +123,7 @@ server = shinyServer(function(input, output, session){
     updateSliderInput(session, "x_range", max = nrow(coverage_data))
     #updateSliderInput(session, "coverage_threshold", max = max(coverage_data[,3]), value = 10)
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
+
     updateSelectInput(session, "reference_seq", choices=coverage_data[,1][!duplicated(coverage_data[,1])])
     coverage_data_contig <<- coverage_data[coverage_data$V1==input$reference_seq,]
 
@@ -175,7 +176,11 @@ server = shinyServer(function(input, output, session){
     
     # use GFF information
     req(input$GFF$datapath)
-    low_cov_genes <<- low_coverage_gene(low_coverage_info,genes_df)
+    if(input$low_coverage_gene_mode == 'Absolute'){
+      low_cov_genes <<- low_coverage_gene(low_cov,genes_df)
+    }else{
+      low_cov_genes <<- low_coverage_gene_window(coverage_data_contig,genes_df,input$coverage_threshold,input$cov_window)
+    }
     updateSelectInput(session, "low_coverage_gene", choices = c("OFF",low_cov_genes$name))
   })
   
@@ -214,17 +219,18 @@ server = shinyServer(function(input, output, session){
     # subset data and change to different contig/chromosome
     coverage_data_contig <<- coverage_data[coverage_data$V1==input$reference_seq,]
     updateSliderInput(session, "x_range", max = nrow(coverage_data_contig))
-    
+
     # update select input for low coverage regions on threshold
     low_coverage_info <<- find_low_coverage_regions(coverage_data_contig, input$coverage_threshold)
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
-    
+
     # plot
     output$main_plot = renderPlot({
       basic_plot(data = coverage_data_contig, start_coord = input$x_range[1], end_coord = input$x_range[2], 
                  plot_dots = input$plot_dots, plot_lines = input$plot_line, dots_alpha = dot_alpha, line_alpha = line_alpha,
                  xlabel = xlabel, ylabel = ylabel, base_font_size = base_font_size, mark_below_thr = mark_below_thr, cov_threshold = cov_threshold)
     })
+
   })
   
   
@@ -233,10 +239,14 @@ server = shinyServer(function(input, output, session){
     req(input$coverage_data$datapath)
     req(input$GFF$datapath)
     genes_df <<- parse_gff(input$GFF$datapath)
-    if(max(genes_df$end) == nrow(coverage_data)){
+    if(max(genes_df$end) <= nrow(coverage_data)){
       coverage_data_contig <<- depth_with_gene(coverage_data_contig, genes_df)
-      low_cov = find_low_coverage_regions(coverage_data,input$coverage_threshold)
-      low_cov_genes <<- low_coverage_gene(low_cov,genes_df)
+      low_cov <<- find_low_coverage_regions(coverage_data,input$coverage_threshold)
+      if(input$low_coverage_gene_mode == 'Absolute'){
+        low_cov_genes <<- low_coverage_gene(low_cov,genes_df)
+      }else{
+        low_cov_genes <<- low_coverage_gene_window(coverage_data_contig,genes_df,input$coverage_threshold,input$cov_window)
+      }
       updateSelectInput(session, "low_coverage_gene", choices = c("OFF",low_cov_genes$name))
       
     }else{
@@ -246,15 +256,36 @@ server = shinyServer(function(input, output, session){
    
   })
   
+  observeEvent(input$low_coverage_gene_mode,{
+    req(input$coverage_data$datapath)
+    req(c(input$coverage_data$datapath,input$GFF$datapath))
+    if(input$low_coverage_gene_mode == 'Absolute'){
+      low_cov_genes <<- low_coverage_gene(low_cov,genes_df)
+    }else{
+      low_cov_genes <<- low_coverage_gene_window(coverage_data_contig,genes_df,input$coverage_threshold,input$cov_window)  #low_coverage_gene(low_cov,genes_df)
+    }
+    updateSelectInput(session, "low_coverage_gene", choices = c("OFF",low_cov_genes$name))
+    
+  })
   
+  observeEvent(input$cov_window, {
+    req(input$coverage_data$datapath)
+    
+    low_cov_genes <<- low_coverage_gene_window(coverage_data_contig,genes_df,input$coverage_threshold,input$cov_window)  #low_coverage_gene(low_cov,genes_df)
+  
+  updateSelectInput(session, "low_coverage_gene", choices = c("OFF",low_cov_genes$name))
+  })
+  
+
   observeEvent(input$low_coverage_gene, {
     req(input$coverage_data$datapath)
     req(input$GFF$datapath)
     if(input$low_coverage_gene != "OFF"){
       test_obj = low_cov_genes[which(low_cov_genes$name == input$low_coverage_gene), ]
+      if(input$low_coverage_gene_mode != 'Absolute'){
+      }
       updateSliderInput(session, "x_range", value = c(test_obj[1,1], test_obj[1,2]))
     }
-
   })
   
   
