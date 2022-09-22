@@ -14,6 +14,7 @@ basic_plot = function(data, start_coord, end_coord, plot_dots = TRUE,
                       plot_lines = FALSE, dots_alpha=0.3, line_alpha=1){
   # subset data
   data_subset = data[start_coord:end_coord,]
+  colnames(data_subset)[2:3] = c("V2", "V3")
   # basic plot
   p1 = ggplot(data = data_subset, aes(x=V2, y=V3)) + 
     theme_bw() + 
@@ -39,8 +40,14 @@ find_low_coverage_regions = function(coverage_data, threshold){
   "
   # find consecutive low coverage coordinates and length of these regions
   low_cov = which(coverage_data$V3 < threshold)
-  start = c(1, low_cov[c(0, diff(low_cov)) > 1])
-  end = c(low_cov[diff(low_cov) > 1], length(low_cov))
+  start = c(low_cov[1], low_cov[c(0, diff(low_cov)) > 1])
+  end = c(low_cov[diff(low_cov) > 1], low_cov[length(low_cov)])
+  
+  if(end[length(end)] == length[length(end)-1]){
+    # this case occurs if the last low coverage region consists of only a single base
+    end = end[-length(end)]
+  }
+  
   start_end_regions = data.frame(start, end)
   start_end_regions$choices = paste(start_end_regions[,1], " : ", start_end_regions[,2])
   
