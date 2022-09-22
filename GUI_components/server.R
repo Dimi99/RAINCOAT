@@ -159,6 +159,16 @@ server = shinyServer(function(input, output, session){
     low_coverage_info <<- find_low_coverage_regions(coverage_data_contig, input$coverage_threshold)
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
     
+    if(!is.null(input$GFF$datapath)){
+      if(input$low_coverage_gene_mode == 'Absolute'){
+        low_cov_genes <<- low_coverage_gene(low_coverage_info,genes_df)
+      }else{
+        low_cov_genes <<- low_coverage_gene_window(coverage_data_contig,genes_df,input$coverage_threshold,input$cov_window)
+      }
+      updateSelectInput(session, "low_coverage_gene", choices = c("OFF",low_cov_genes$name))
+    }
+    
+    
     # update plots
     if(input$low_cov_check){
       output$main_plot = renderPlot({
@@ -174,14 +184,6 @@ server = shinyServer(function(input, output, session){
       })
     }
     
-    # use GFF information
-    req(input$GFF$datapath)
-    if(input$low_coverage_gene_mode == 'Absolute'){
-      low_cov_genes <<- low_coverage_gene(low_coverage_info,genes_df)
-    }else{
-      low_cov_genes <<- low_coverage_gene_window(coverage_data_contig,genes_df,input$coverage_threshold,input$cov_window)
-    }
-    updateSelectInput(session, "low_coverage_gene", choices = c("OFF",low_cov_genes$name))
   })
   
   # ---- jump to low coverage regions

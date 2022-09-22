@@ -1,7 +1,13 @@
 #include <Rcpp.h>
 
+/*
+ * Function that removes duplicate genes from the parsed gff file
+ * @param Rcpp::DataFrame all_genes: DataFrame that contains start,end and id of every gene
+ * @return Rcpp::DataFrame unique_genes: Dataframe that contains all unique genes
+ */
+
 // [[Rcpp::export]]
-Rcpp::DataFrame remove_duplicates(Rcpp::DataFrame all_genes){
+Rcpp::DataFrame remove_duplicates(Rcpp::DataFrame &all_genes){
     
     Rcpp::IntegerVector gene_start = all_genes["start"];
     Rcpp::IntegerVector gene_end = all_genes["end"];

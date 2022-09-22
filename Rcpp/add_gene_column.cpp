@@ -1,4 +1,12 @@
 #include <Rcpp.h>
+
+/*
+ * Function to map every base to a gene if possible
+ * @param Rcpp::DataFrame total_bases: DataFrame that contains all bases
+ * @param Rcpp::DataFrame all_genes: DataFrame that contains start,end and id of every gene
+ * @return Rcpp::DataFrame annotated_bases: Dataframe that contains all bases and an extra column with gene annotations
+ */
+
 // [[Rcpp::export]]
 Rcpp::DataFrame depth_with_gene(Rcpp::DataFrame &total_bases, Rcpp::DataFrame &all_genes){
     Rcpp::IntegerVector  bases = total_bases["V2"];

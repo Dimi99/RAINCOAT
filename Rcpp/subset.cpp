@@ -1,7 +1,14 @@
 #include <Rcpp.h>
 
+/*
+ * Function to determine all low coverage genes = genes that have one base position classified as low coverage
+ * @param Rcpp::DataFrame low_coverage_bases : DataFrame that contains all bases classified as low coverage
+ * @param Rcpp::DataFrame all_genes: DataFrame that contains start,end and id of every gene
+ * @return Rcpp::DataFrame low_coverage_genes: Dataframe that contains all genes with at least one low coverage base
+ */
+
 // [[Rcpp::export]]
-Rcpp::DataFrame low_coverage_gene(Rcpp::DataFrame low_coverage_bases, Rcpp::DataFrame all_genes){
+Rcpp::DataFrame low_coverage_gene(Rcpp::DataFrame &low_coverage_bases, Rcpp::DataFrame &all_genes){
     Rcpp::IntegerVector start_out; 
     Rcpp::IntegerVector end_out; 
     Rcpp::StringVector id_out;
@@ -45,6 +52,14 @@ Rcpp::DataFrame low_coverage_gene(Rcpp::DataFrame low_coverage_bases, Rcpp::Data
     return low_coverage_genes; 
 }
 
+/*
+ * Function to determine all low coverage genes = genes that have low coverage over a whole window
+ * @param Rcpp::DataFrame coverage_data : DataFrame that contains the coverage information of every base
+ * @param Rcpp::DataFrame all_genes: DataFrame that contains start,end and id of every gene
+ * @param int limit: threshold for low coverage
+ * @param int window: window size for low coverage classification
+ * @return Rcpp::DataFrame low_coverage_genes: Dataframe that contains all genes with a window of low coverage bases
+ */
 
 // [[Rcpp::export]]
 Rcpp::DataFrame low_coverage_gene_window(Rcpp::DataFrame coverage_data, Rcpp::DataFrame all_genes, int limit, int window){
