@@ -54,6 +54,7 @@ server = shinyServer(function(input, output, session){
     #updateSliderInput(session, "coverage_threshold", max = max(coverage_data[,3]), value = 10)
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
     updateSelectInput(session, "reference_seq", choices=coverage_data[,1][!duplicated(coverage_data[,1])])
+    coverage_data_contig <<- coverage_data[coverage_data$V1==input$reference_seq,]
     
     # ----- Basic plot
     output$main_plot = renderPlot({
