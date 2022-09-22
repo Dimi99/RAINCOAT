@@ -43,7 +43,7 @@ find_low_coverage_regions = function(coverage_data, threshold){
   start = c(low_cov[1], low_cov[c(0, diff(low_cov)) > 1])
   end = c(low_cov[diff(low_cov) > 1], low_cov[length(low_cov)])
   
-  if(end[length(end)] == length[length(end)-1]){
+  if(end[length(end)] == end[length(end)-1]){
     # this case occurs if the last low coverage region consists of only a single base
     end = end[-length(end)]
   }
