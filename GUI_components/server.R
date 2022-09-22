@@ -52,18 +52,17 @@ server = shinyServer(function(input, output, session){
     updateSliderInput(session, "x_range", max = nrow(coverage_data))
     #updateSliderInput(session, "coverage_threshold", max = max(coverage_data[,3]), value = 10)
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
-    updateSelectInput(session, "reference_seq", choices=coverage_data[,1][!duplicated(coverage_data[,1])])
-    
+    updateSelectInput(session, "reference_seq", choices=c(coverage_data[,1][!duplicated(coverage_data[,1])]))
     # ----- Basic plot
     output$main_plot = renderPlot({
       basic_plot(coverage_data_contig, input$x_range[1], input$x_range[2], input$plot_dots, input$plot_line, dot_alpha, line_alpha)
       })
-
     # ----- Render (empty) data table for selected plots
     output$main_plot_info = renderDataTable({
       brushedPoints(coverage_data_contig, input$plot_brush)
     })
   })
+  
   
   # ----------------------------- x-Axis control ----------------------------- #
   observeEvent(input$x_range,{
@@ -111,15 +110,16 @@ server = shinyServer(function(input, output, session){
     # subset data and change to different contig/chromosome
     coverage_data_contig <<- coverage_data[coverage_data$V1==input$reference_seq,]
     updateSliderInput(session, "x_range", max = nrow(coverage_data_contig))
-    
+
     # update select input for low coverage regions on threshold
     low_coverage_info <<- find_low_coverage_regions(coverage_data_contig, input$coverage_threshold)
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))
-    
+
     # plot
     output$main_plot = renderPlot({
       basic_plot(coverage_data_contig, input$x_range[1], input$x_range[2], input$plot_dots, input$plot_line, dot_alpha, line_alpha)
     })
+
   })
   
   
@@ -146,6 +146,7 @@ server = shinyServer(function(input, output, session){
   })
   
   observeEvent(input$low_coverage_gene_mode,{
+    req(input$coverage_data$datapath)
     req(c(input$coverage_data$datapath,input$GFF$datapath))
     if(input$low_coverage_gene_mode == 'Absolute'){
       low_cov_genes <<- low_coverage_gene(low_cov,genes_df)
@@ -157,6 +158,8 @@ server = shinyServer(function(input, output, session){
   })
   
   observeEvent(input$cov_window, {
+    req(input$coverage_data$datapath)
+    
     low_cov_genes <<- low_coverage_gene_window(coverage_data_contig,genes_df,input$coverage_threshold,input$cov_window)  #low_coverage_gene(low_cov,genes_df)
   
   updateSelectInput(session, "low_coverage_gene", choices = c("OFF",low_cov_genes$name))
