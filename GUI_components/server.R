@@ -177,7 +177,7 @@ server = shinyServer(function(input, output, session){
     # use GFF information
     req(input$GFF$datapath)
     if(input$low_coverage_gene_mode == 'Absolute'){
-      low_cov_genes <<- low_coverage_gene(low_cov,genes_df)
+      low_cov_genes <<- low_coverage_gene(low_coverage_info,genes_df)
     }else{
       low_cov_genes <<- low_coverage_gene_window(coverage_data_contig,genes_df,input$coverage_threshold,input$cov_window)
     }
@@ -219,7 +219,14 @@ server = shinyServer(function(input, output, session){
     # subset data and change to different contig/chromosome
     coverage_data_contig <<- coverage_data[coverage_data$V1==input$reference_seq,]
     updateSliderInput(session, "x_range", max = nrow(coverage_data_contig))
-
+    #update single base gene annotation
+    print(input$GFF$datapath)
+    if(!is.null(input$GFF$datapath)){
+      genes_df <<- parse_gff(input$GFF$datapath)
+      if(max(genes_df$end) <= nrow(coverage_data_contig)){
+        coverage_data_contig <<- depth_with_gene(coverage_data_contig, genes_df)
+      }
+    }
     # update select input for low coverage regions on threshold
     low_coverage_info <<- find_low_coverage_regions(coverage_data_contig, input$coverage_threshold)
     updateSelectInput(session, "low_coverage_region", choices = c("OFF",low_coverage_info[,3]))

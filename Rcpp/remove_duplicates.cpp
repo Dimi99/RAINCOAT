@@ -23,10 +23,10 @@ Rcpp::DataFrame remove_duplicates(Rcpp::DataFrame all_genes){
             id_out.push_back(gene_names[j]);
         }
     }
-Rcpp::DataFrame unique_genes = 
-	  Rcpp::DataFrame::create(Rcpp::Named("start")=start_out,
-				  Rcpp::Named("end")=end_out,
-				  Rcpp::Named("id")=id_out);
+    Rcpp::DataFrame unique_genes = 
+	Rcpp::DataFrame::create(Rcpp::Named("start")=start_out,
+				            Rcpp::Named("end")=end_out,
+				            Rcpp::Named("id")=id_out);
 
     
     return unique_genes; 
