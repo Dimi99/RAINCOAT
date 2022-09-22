@@ -67,22 +67,23 @@ ui = fluidPage(
            sliderInput("coverage_threshold", h4("Coverage Threshold"), 
                        min = 0, max = 1000, value = 10, 
                        width = '100%'),
+           checkboxInput("low_cov_check", "Mark low coverage positions", value = FALSE),
            # Selectinputs: Low coverage regions/genes
            selectInput("low_coverage_region", h4("Jump to low coverage region"), 
                        choices = c("-"), width = '100%'),
-           selectInput("low_coverage_gene", h4("Jump to low coverage gene"), 
+           selectizeInput("low_coverage_gene", h4("Jump to low coverage gene"), 
                        choices = c("needs gff file first"), width = '100%'),
            ),
     # ------------------------------ Plot Window ----------------------------- #
     column(8,
            tabsetPanel(type = "tabs",
                        tabPanel("Main Plot",
-                                plotOutput("main_plot", width = '100%', height = '550px', brush = "plot_brush")
+                                plotOutput("main_plot", width = '100%', height = '550px', brush = brushOpts("plot_brush", direction = "x"))
                                 ), # tabPanel "main plot" close
                        tabPanel("Selected Coordinates",
                                 fluidRow(
                                   column(6, plotOutput("selection_plot", width = '100%', height = '550px')),
-                                  column(6, dataTableOutput("main_plot_info"))
+                                  column(6, style = "background-color:#FFFFFF;", dataTableOutput("main_plot_info"))
                                 ) # fluidRow close
                                 ) # tabPanel "selected coordinates" close
                        ) # tabsetPanel close
@@ -91,9 +92,9 @@ ui = fluidPage(
   
   # ------------------------------ Plot aesthetics --------------------------- #
   hr(),
+  fluidRow(column(12, h2("Plot aesthetics"))),
   fluidRow(
     column(3,
-           h2("Plot aesthetics"),
            # ---- Dot and/or line plot + alpha values
            fluidRow(
              # -- Checkboxes
@@ -109,6 +110,27 @@ ui = fluidPage(
                     div(class='label-left', sliderInput("line_alpha", "Line alpha", 0, 1, 1, width = '100%'))
                     )
              ), # fluidRow dots and lines close
+           ),
+    # ---- Axis label inputs
+    # Axis labels (text inputs)
+    column(3,
+           div(style = "margin-top: 10px"),
+           # x-Axis
+           fluidRow(
+             column(9, div(class='label-left', textInput("x_label", "x-Label"))),
+             column(3, actionButton("set_x_text", "Set!", width = '100%'))
+           ),
+           div(style = "margin-top: 20px"),
+           # y-Axis
+           fluidRow(
+             column(9, div(class='label-left', textInput("y_label", "y-Label"))),
+             column(3, actionButton("set_y_text", "Set!", width = '100%'))
+           ),
+           ),
+    # Axis label size (sliders)
+    column(3,
+           div(class='label-left', sliderInput("font_size", "Font size", 11, 40, 23, width = '100%')),
+           div(class='label-left', sliderInput("xy_tick_size", "Useless Slider", 0, 1, 1, width = '100%'))
            )
   ) # fluidRow aesthetics close
   

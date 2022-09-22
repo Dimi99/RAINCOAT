@@ -10,15 +10,20 @@ basic_plot = function(data, start_coord, end_coord, alpha=0.3){
 
 
 
-basic_plot = function(data, start_coord, end_coord, plot_dots = TRUE, 
-                      plot_lines = FALSE, dots_alpha=0.3, line_alpha=1){
+basic_plot = function(data, start_coord, end_coord, plot_dots = TRUE, plot_lines = FALSE, dots_alpha=0.3, line_alpha=1,
+                      xlabel = "Position in Reference", ylabel = "Coverage", base_font_size=11, mark_below_thr = FALSE, cov_threshold = 10){
   # subset data
-  data_subset = data[start_coord:end_coord,]
+  data_subset = data[data[,2] %in% start_coord:end_coord,]
   colnames(data_subset)[2:3] = c("V2", "V3")
+
   # basic plot
   p1 = ggplot(data = data_subset, aes(x=V2, y=V3)) + 
-    theme_bw() + 
-    labs(x = "Position in Reference", y = "Coverage")
+    theme_bw(base_size = base_font_size) + 
+    labs(x = xlabel, y = ylabel, title = "Coverage Analysis", 
+         subtitle = paste0("Region ", start_coord, ":", end_coord)) + 
+    theme(axis.title = element_text(face = "bold"),
+          plot.title = element_text(face = "bold"),
+          plot.subtitle = element_text(size = base_font_size-4))
     
   # add dots
   if(plot_dots){
@@ -28,6 +33,14 @@ basic_plot = function(data, start_coord, end_coord, plot_dots = TRUE,
   if(plot_lines){
     p1 = p1 + geom_line(alpha=line_alpha)
   }
+  
+  # if desired, mark genes below coverage threshold
+  if(mark_below_thr){
+    low_thr_data = data_subset[data_subset$V3 < cov_threshold,]
+    p1 = p1 + geom_point(data = low_thr_data, color = "red", shape=3)
+  }
+  
+  
   return(p1)
 }
 
