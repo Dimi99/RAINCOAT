@@ -78,7 +78,7 @@ ui = fluidPage(
                          min = 1, max = 40, value = 10, 
                          width = '100%'),
            ),
-           selectInput("low_coverage_gene", h4("Jump to low coverage gene"), 
+           selectizeInput("low_coverage_gene", h4("Jump to low coverage gene", server = TRUE), 
 
                        choices = c("needs gff file first"), width = '100%'),
            ),

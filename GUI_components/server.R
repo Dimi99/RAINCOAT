@@ -267,7 +267,7 @@ server = shinyServer(function(input, output, session){
   
   observeEvent(input$low_coverage_gene_mode,{
     req(input$coverage_data$datapath)
-    req(c(input$coverage_data$datapath,input$GFF$datapath))
+    req(input$GFF$datapath)
     if(input$low_coverage_gene_mode == 'Absolute'){
       low_cov_genes <<- low_coverage_gene(low_cov,genes_df)
     }else{
