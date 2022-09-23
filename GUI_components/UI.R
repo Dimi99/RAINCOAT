@@ -27,7 +27,7 @@ ui = fluidPage(
 
   # ============================ USER INTERFACE ============================== #
   theme = shinytheme("slate"),
-  navbarPage("SHICT"),
+  navbarPage("RAINCOAT"),
 
   fluidRow(
     # --------------------------- Sidebar: Upload ---------------------------- #
